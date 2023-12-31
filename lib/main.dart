@@ -36,7 +36,7 @@ Widget build(BuildContext context) {
     home: Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: [
+        children: const [
           HomePage(),
           FormPage(),
         ],

@@ -61,11 +61,11 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
-            Container(
+            SizedBox(
               height: 68,
               child: TextField(
                 onChanged: onSearch,
-                style: TextStyle(color: Colors.white, fontFamily: "Poppins"),
+                style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.grey[850],
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50),
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: const BorderSide(color: Colors.white),
                   ),
                   hintStyle:
                       TextStyle(fontSize: 15, color: Colors.grey.shade500),
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                         return userComponent(user: foundedUsers[index]);
                       },
                     )
-                  : Center(
+                  : const Center(
                       child: Text(
                         "No users found",
                         style: TextStyle(
@@ -142,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text(
                     user.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                     ),
@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> {
               width: 110,
               duration: const Duration(milliseconds: 300),
               decoration: BoxDecoration(
-                color: user.isFollowedByMe ? Colors.blue[700] : Color(0xffffff),
+                color: user.isFollowedByMe ? Colors.blue[700] : const Color(0x00ffffff),
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(
                   color: user.isFollowedByMe
