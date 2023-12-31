@@ -30,16 +30,23 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-          body: [HomePage(), const FormPage()][_currentIndex],
-          bottomNavigationBar: BottomNavigation(
-            onIndexChanged: setCurrentIndex,
-            currentIndex: _currentIndex,
-          ),
-        )
-    );
-  }
+@override
+Widget build(BuildContext context) {
+  return MaterialApp(
+    home: Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          HomePage(),
+          FormPage(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigation(
+        onIndexChanged: setCurrentIndex,
+        currentIndex: _currentIndex,
+      ),
+    ),
+  );
+}
+
 }
