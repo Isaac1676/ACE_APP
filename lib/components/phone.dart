@@ -18,22 +18,24 @@ class PhoneNumberField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: TextFormField(
+        style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
         controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
+          hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade500),
           errorBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.red),
             borderRadius: BorderRadius.circular(8.0),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade400),
+            borderSide: BorderSide(color: Colors.transparent),
             borderRadius: BorderRadius.circular(8.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue.shade300),
+            borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(8.0),
           ),
-          fillColor: Colors.grey.shade100,
+          fillColor: Colors.grey[850],
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey.shade400),

@@ -1,8 +1,8 @@
 class User {
   final String name;
-  final String username;
-  final String image;
-  bool isFollowedByMe;
+  final String numPhone;
+  final String classe;
+  bool isConfirmed;
 
-  User(this.name, this.username, this.image, this.isFollowedByMe);
+  User(this.name, this.numPhone, this.classe, this.isConfirmed);
 }

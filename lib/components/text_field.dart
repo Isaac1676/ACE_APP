@@ -17,27 +17,29 @@ class MyTextfield extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: TextFormField(
+        style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
         controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
+          hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade500),
           errorBorder: OutlineInputBorder( // Bordure en cas d'erreur
             borderSide: const BorderSide(color: Colors.red),
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade400),
-            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: Colors.transparent),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue.shade300),
-            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          fillColor: Colors.grey.shade100,
+          fillColor: Colors.grey[850],
           filled: true,
           // Vérification si une erreur est retournée par le validateur pour utiliser la bordure d'erreur
           border: validator != null ? OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.red), // Utilisation de la bordure d'erreur
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(10.0),
           ) : null,
         ),
         validator: validator, // Ajout du validateur

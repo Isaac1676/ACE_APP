@@ -30,9 +30,10 @@ class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(
         title: const Text(
-          "Formulaire",
+          "FORMULAIRE",
           style: TextStyle(
             fontFamily: "Poppins",
             fontSize: 20,
@@ -40,7 +41,7 @@ class _FormPageState extends State<FormPage> {
           ),
         ),
         toolbarHeight: 70,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.grey[850],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -50,7 +51,7 @@ class _FormPageState extends State<FormPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 40),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -59,7 +60,7 @@ class _FormPageState extends State<FormPage> {
                       style: TextStyle(
                         fontFamily: "Poppins",
                         fontSize: 20,
-                        color: Colors.black54,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -111,7 +112,7 @@ class _FormPageState extends State<FormPage> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 24),
                 GestureDetector(
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
