@@ -121,7 +121,8 @@ class _FormPageState extends State<FormPage> {
                       String classe = classeController.text;
                       String phoneNumber = numController.text;
 
-                      User newUser = User(nom: name, classe: classe, num: phoneNumber);
+                      User newUser =
+                          User(nom: name, classe: classe, num: phoneNumber);
 
                       setState(() {
                         userList.add(newUser);
@@ -132,15 +133,20 @@ class _FormPageState extends State<FormPage> {
                       numController.clear();
 
                       for (var user in userList) {
-                        print('Nom : ${user.nom}, Classe : ${user.classe}, Numéro : ${user.num}');
+                        print(
+                            'Nom : ${user.nom}, Classe : ${user.classe}, Numéro : ${user.num}');
                       }
 
                       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Utilisateur ajouté', style: TextStyle(fontFamily: "Poppins"),),
-          duration: Duration(seconds: 5), // Durée d'affichage de la SnackBar
-        ),
-      );
+                        const SnackBar(
+                          content: Text(
+                            'Utilisateur ajouté',
+                            style: TextStyle(fontFamily: "Poppins"),
+                          ),
+                          duration: Duration(
+                              seconds: 5), // Durée d'affichage de la SnackBar
+                        ),
+                      );
                     }
                   },
                   child: Container(
