@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
-            Container(
+            SizedBox(
               height: 68,
               child: TextField(
                 onChanged: onSearch,

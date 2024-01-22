@@ -15,14 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isButton = false;
   int _currentIndex = 0;
-
-  void updateButton(bool newState) {
-    setState(() {
-      isButton = newState;
-    });
-  }
 
   setCurrentIndex(index) {
     setState(() {

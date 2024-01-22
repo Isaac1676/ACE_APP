@@ -28,11 +28,11 @@ class PhoneNumberField extends StatelessWidget {
             borderRadius: BorderRadius.circular(8.0),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.transparent),
+            borderSide: const BorderSide(color: Colors.transparent),
             borderRadius: BorderRadius.circular(8.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+            borderSide: const BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(8.0),
           ),
           fillColor: Colors.grey[850],
