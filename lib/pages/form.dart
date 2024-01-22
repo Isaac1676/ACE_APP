@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ace_app/components/text_field.dart';
-import 'package:ace_app/components/phone.dart';
 
 class User {
   String nom;
