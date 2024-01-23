@@ -1,10 +1,15 @@
+import 'package:ace_app/firebase_options.dart';
 import 'package:ace_app/pages/form.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ace_app/components/bar_bottom.dart';
 import 'package:ace_app/pages/home.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   runApp(const MyApp());
 }
 

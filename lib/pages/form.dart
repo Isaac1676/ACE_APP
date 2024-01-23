@@ -1,4 +1,5 @@
 import 'package:ace_app/components/button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ace_app/components/text_field.dart';
 
@@ -18,8 +19,32 @@ class _FormPageState extends State<FormPage> {
   // login method
   void login() {
     if (_formKey.currentState!.validate()) {
-      // Only proceed if the form is valid
-      // Implement your login logic here
+      String name = nameController.text;
+      String classe = classeController.text;
+      String numtel = numController.text;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Utilisateur ajouté',
+            style: TextStyle(fontFamily: "Poppins"),
+          ),
+          duration: Duration(seconds: 5), // Durée d'affichage de la SnackBar
+        ),
+      );
+
+      // Ajout de la base de données
+      CollectionReference usersRefs =
+          FirebaseFirestore.instance.collection("Users");
+      usersRefs.add({
+        'name': name,
+        'classe': classe,
+        'numtel': numtel,
+      });
+
+      nameController.clear();
+      classeController.clear();
+      numController.clear();
     }
   }
 
@@ -67,7 +92,9 @@ class _FormPageState extends State<FormPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 40,),
+              const SizedBox(
+                height: 40,
+              ),
 
               // Formulaire pour le nom
               MyTextField(
@@ -80,7 +107,9 @@ class _FormPageState extends State<FormPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
 
               // Formulaire pour la classe
               MyTextField(
@@ -93,7 +122,9 @@ class _FormPageState extends State<FormPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
 
               // Formulaire pour le numéro
               MyPhoneNumberField(
@@ -106,7 +137,9 @@ class _FormPageState extends State<FormPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 40,),
+              const SizedBox(
+                height: 40,
+              ),
 
               // Bouton d'inscription
               MyButton(

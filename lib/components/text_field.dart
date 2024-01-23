@@ -21,10 +21,10 @@ class MyTextField extends StatelessWidget {
         style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.transparent),
+            borderSide: const BorderSide(color: Colors.transparent),
             borderRadius: BorderRadius.circular(10)),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+            borderSide: const BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(10)),
           filled: true,
           fillColor: Colors.grey[850],
@@ -59,11 +59,11 @@ class MyPhoneNumberField extends StatelessWidget {
         style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.transparent),
+            borderSide: const BorderSide(color: Colors.transparent),
             borderRadius: BorderRadius.circular(10),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+            borderSide: const BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(10),
           ),
           filled: true,

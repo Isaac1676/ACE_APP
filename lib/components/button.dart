@@ -19,12 +19,12 @@ class MyButton extends StatelessWidget {
           color: Colors.blue,
           borderRadius: BorderRadius.circular(8)
         ),
-        padding: EdgeInsets.all(20),
-        margin: EdgeInsets.symmetric(horizontal: 25),
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.symmetric(horizontal: 25),
         child: Center(
           child: Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: "Poppins",
               fontSize: 17,
               color: Colors.white
