@@ -1,48 +1,36 @@
 import 'package:flutter/material.dart';
 
-class MyButton extends StatefulWidget {
-  final bool isButtonConfirmed;
-  final Function(bool) updateButtonState;
+class MyButton extends StatelessWidget {
+  final void Function()? onTap;
+  final String text;
 
-  const MyButton(
-      {Key? key,
-      required this.isButtonConfirmed,
-      required this.updateButtonState})
-      : super(key: key);
-
-  @override
-  State<MyButton> createState() => _MyButtonState();
-}
-
-class _MyButtonState extends State<MyButton> {
-  late bool isPressed = false;
+  const MyButton({
+    super.key,
+    required this.text,
+    required this.onTap
+    });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-        backgroundColor:
-            MaterialStateProperty.all(isPressed ? Colors.grey : Colors.blue),
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(8)
+        ),
+        padding: EdgeInsets.all(20),
+        margin: EdgeInsets.symmetric(horizontal: 25),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontFamily: "Poppins",
+              fontSize: 17,
+              color: Colors.white
+            ),
           ),
         ),
-        padding: MaterialStateProperty.all(
-          const EdgeInsets.all(10.0),
-        ),
-      ),
-      onPressed: isPressed
-          ? null
-          : () {
-              setState(() {
-                isPressed = !isPressed;
-                widget.updateButtonState(isPressed);
-              });
-            },
-      child: const Text(
-        "Confirmer",
-        style: TextStyle(color: Colors.white),
       ),
     );
   }

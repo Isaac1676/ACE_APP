@@ -1,103 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class MyTextfield extends StatelessWidget {
-  final TextEditingController controller;
+class MyTextField extends StatelessWidget {
   final String hintText;
-  final String? Function(String?)? validator;
+  final TextEditingController controller;
 
-  const MyTextfield({
-    Key? key,
-    required this.controller,
+  const MyTextField({
+    super.key,
     required this.hintText,
-    this.validator,
-  }) : super(key: key);
+    required this.controller
+    });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: TextFormField(
-        style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
+      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      child: TextField(
         controller: controller,
+        style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
         decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.transparent),
+            borderRadius: BorderRadius.circular(10)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.transparent),
+            borderRadius: BorderRadius.circular(10)),
+          filled: true,
+          fillColor: Colors.grey[850],
           hintText: hintText,
           hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade500),
-          errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          fillColor: Colors.grey[850],
-          filled: true,
-          // Vérification si une erreur est retournée par le validateur pour utiliser la bordure d'erreur
-          border: validator != null ? OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red), // Utilisation de la bordure d'erreur
-            borderRadius: BorderRadius.circular(10.0),
-          ) : null,
         ),
-        validator: validator, // Ajout du validateur
-      ),
-    );
-  }
-}
-
-
-class PhoneNumberField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hintText;
-  final String? Function(String?)? validator;
-
-  const PhoneNumberField({
-    Key? key,
-    required this.controller,
-    required this.hintText,
-    this.validator,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: TextFormField(
-        style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade500),
-          errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          fillColor: Colors.grey[850],
-          filled: true,
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade400),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        validator: validator,
-        keyboardType: TextInputType.phone,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(10), // Limite la longueur à 10 chiffres
-        ],
+          
       ),
     );
   }
