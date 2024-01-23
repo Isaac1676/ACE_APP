@@ -3,19 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:ace_app/components/bar_bottom.dart';
 import 'package:ace_app/pages/home.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
-void main() async{
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-);
-
+void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -24,29 +18,28 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
 
-  setCurrentIndex(index) {
+  void setCurrentIndex(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
 
-@override
-Widget build(BuildContext context) {
-  return MaterialApp(
-    home: Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: const [
-          HomePage(),
-          FormPage(),
-        ],
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: const [
+            HomePage(),
+            FormPage(),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigation(
+          onIndexChanged: setCurrentIndex,
+          currentIndex: _currentIndex,
+        ),
       ),
-      bottomNavigationBar: BottomNavigation(
-        onIndexChanged: setCurrentIndex,
-        currentIndex: _currentIndex,
-      ),
-    ),
-  );
-}
-
+    );
+  }
 }
