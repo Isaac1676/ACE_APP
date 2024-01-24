@@ -14,6 +14,7 @@ class _FormPageState extends State<FormPage> {
   final nameController = TextEditingController();
   final classeController = TextEditingController();
   final numController = TextEditingController();
+  
   final _formKey = GlobalKey<FormState>(); // Add a GlobalKey for the form
 
   // login method
@@ -44,7 +45,7 @@ class _FormPageState extends State<FormPage> {
 
       nameController.clear();
       classeController.clear();
-      numController.clear();
+      nameController.clear();
     }
   }
 

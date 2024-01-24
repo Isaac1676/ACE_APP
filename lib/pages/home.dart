@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ace_app/components/models.dart';
 
@@ -9,41 +10,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<User> _users = [
-    User('Elliana Palacios', '0585456593', 'SRIT 2B', false),
-    User('Kayley Dwyer', '0585456593', 'TWIN 2', false),
-    User('Kathleen Mcdonough', '0585456593', 'SIGL2', false),
-    User('Kathleen Dyer', '0585456593', 'RTEL 2', false),
-    User('Mikayla Marquez', '0145857485', 'SRIT 2A', false),
-    User('Kiersten Lange', '0225845632', 'RTEL 3', false),
-    User('Carys Metz', '0125458745', 'TWIN 1', false),
-    User('Ignacio Schmidt', '0485669545', 'SRIT 1A', false),
-    User('Clyde Lucas', '0145884565', 'SIGL 3', false),
-    User('Mikayla Marquez', '0125456593', 'SRIT 1B', false)
-  ];
-
-  late List<User> foundedUsers;
+  late List<QueryDocumentSnapshot> users;
 
   @override
   void initState() {
     super.initState();
-    foundedUsers = List.from(_users);
+    users = [];
   }
 
   void onSearch(String search) {
-    setState(() {
-      foundedUsers = _users
-          .where((user) => user.name.toLowerCase().contains(search))
-          .toList();
-    });
+    // Ajouter la logique de recherche ici
   }
 
   void resetConfirmation() {
-    setState(() {
-      for (var user in _users) {
-        user.isConfirmed = false;
-      }
-    });
+    // Ajouter la logique de réinitialisation de la confirmation ici
   }
 
   @override
@@ -63,7 +43,12 @@ class _HomePageState extends State<HomePage> {
         toolbarHeight: 70,
         backgroundColor: Colors.grey[850],
         actions: [
-          IconButton(onPressed: resetConfirmation, icon: const Icon(Icons.refresh, color: Colors.white,))
+          IconButton(
+              onPressed: resetConfirmation,
+              icon: const Icon(
+                Icons.refresh,
+                color: Colors.white,
+              ))
         ],
       ),
       body: Padding(
@@ -76,7 +61,8 @@ class _HomePageState extends State<HomePage> {
               height: 68,
               child: TextField(
                 onChanged: onSearch,
-                style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
+                style:
+                    const TextStyle(color: Colors.white, fontFamily: "Poppins"),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.grey[850],
@@ -101,23 +87,34 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: foundedUsers.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: foundedUsers.length,
-                      itemBuilder: (context, index) {
-                        return userComponent(user: foundedUsers[index]);
-                      },
-                    )
-                  : const Center(
-                      child: Text(
-                        "No users found",
-                        style: TextStyle(
+              child: StreamBuilder(
+                stream:
+                    FirebaseFirestore.instance.collection("Users").snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+
+                  if (!snapshot.hasData) {
+                    return const Text(
+                      "Aucun utilisateur",
+                      style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
                           fontFamily: "Poppins",
-                        ),
-                      ),
-                    ),
+                          fontSize: 15),
+                    );
+                  }
+
+                  users = snapshot.data!.docs;
+
+                  return ListView.builder(
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      return userComponent(userSnapshot: users[index]);
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -125,7 +122,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget userComponent({required User user}) {
+  Widget userComponent({required QueryDocumentSnapshot userSnapshot}) {
+    // Extraire les données du snapshot
+    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+
+    // Créer un objet User à partir des données
+    User user = User.fromMap(userData);
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
@@ -136,7 +139,10 @@ class _HomePageState extends State<HomePage> {
             children: [
               const CircleAvatar(
                 backgroundColor: Colors.blue,
-                child: Icon(Icons.person, color: Colors.white,),
+                child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(width: 15),
               Column(
@@ -152,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "${user.numPhone}[${user.classe}]",
+                    "${user.numtel}[${user.classe}]",
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                 ],
@@ -160,19 +166,40 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           GestureDetector(
-            onTap: () {
+            onTap: () async {
+              DateTime now = DateTime.now();
+              String formattedDateTime =
+                  "${now.year}-${now.month}-${now.day}_${now.hour}:${now.minute}:${now.second}";
+
+              // Ajouter l'utilisateur à la nouvelle collection
+              await FirebaseFirestore.instance
+                  .collection("Presence")
+                  .doc(formattedDateTime)
+                  .set({
+                "name": user.name,
+                "numtel": user.numtel,
+                "classe": user.classe,
+                // Ajoutez d'autres champs nécessaires
+                "confirmationDate": now,
+                "confirmed": !user
+                    .isConfirmed, // Mettez à jour en fonction du nouveau champ
+              });
+
+              // Mettre à jour la confirmation dans Firestore
               setState(() {
                 if (!user.isConfirmed) {
                   user.isConfirmed = true;
                 }
-              });
+              }); // Mettez à jour en fonction du nouveau champ
             },
             child: AnimatedContainer(
               height: 35,
               width: 110,
               duration: const Duration(milliseconds: 300),
               decoration: BoxDecoration(
-                color: user.isConfirmed ? Colors.blue[700] : const Color(0x00ffffff),
+                color: user.isConfirmed
+                    ? Colors.blue[700]
+                    : const Color(0x00ffffff),
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(
                   color: user.isConfirmed
@@ -182,7 +209,7 @@ class _HomePageState extends State<HomePage> {
               ),
               child: Center(
                 child: Text(
-                  user.isConfirmed ? 'Confirmed' : 'Confirm',
+                  user.isConfirmed ? 'Confirmé' : 'Confirmer',
                   style: TextStyle(
                     color: user.isConfirmed ? Colors.white : Colors.white,
                   ),
