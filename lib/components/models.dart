@@ -8,16 +8,15 @@ class User {
     required this.name,
     required this.numtel,
     required this.classe,
-    this.isConfirmed = false, // Mettez la valeur par défaut à false
-    // Ajoutez d'autres champs nécessaires
+    required this.isConfirmed
   });
 
-  // Ajoutez cette méthode pour créer une instance de User à partir d'une Map
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       name: map['name'],
       numtel: map['numtel'],
       classe: map['classe'],
+      isConfirmed: map['isConfirmed']
     );
   }
 }

@@ -45,7 +45,7 @@ class _FormPageState extends State<FormPage> {
 
       nameController.clear();
       classeController.clear();
-      nameController.clear();
+      numController.clear();
     }
   }
 

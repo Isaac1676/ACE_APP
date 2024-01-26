@@ -51,72 +51,74 @@ class _HomePageState extends State<HomePage> {
               ))
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 68,
-              child: TextField(
-                onChanged: onSearch,
-                style:
-                    const TextStyle(color: Colors.white, fontFamily: "Poppins"),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey[850],
-                  contentPadding: const EdgeInsets.all(8),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 68,
+                child: TextField(
+                  onChanged: onSearch,
+                  style:
+                      const TextStyle(color: Colors.white, fontFamily: "Poppins"),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey[850],
+                    contentPadding: const EdgeInsets.all(8),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: const BorderSide(color: Colors.white),
+                    ),
+                    hintStyle:
+                        TextStyle(fontSize: 15, color: Colors.grey.shade500),
+                    hintText: "Search Users",
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    borderSide: const BorderSide(color: Colors.white),
-                  ),
-                  hintStyle:
-                      TextStyle(fontSize: 15, color: Colors.grey.shade500),
-                  hintText: "Search Users",
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: StreamBuilder(
-                stream:
-                    FirebaseFirestore.instance.collection("Users").snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  }
-
-                  if (!snapshot.hasData) {
-                    return const Text(
-                      "Aucun utilisateur",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Poppins",
-                          fontSize: 15),
+              const SizedBox(height: 10),
+              Expanded(
+                child: StreamBuilder(
+                  stream:
+                      FirebaseFirestore.instance.collection("Users").snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+        
+                    if (!snapshot.hasData) {
+                      return const Text(
+                        "Aucun utilisateur",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "Poppins",
+                            fontSize: 15),
+                      );
+                    }
+        
+                    users = snapshot.data!.docs;
+        
+                    return ListView.builder(
+                      itemCount: users.length,
+                      itemBuilder: (context, index) {
+                        return userComponent(userSnapshot: users[index]);
+                      },
                     );
-                  }
-
-                  users = snapshot.data!.docs;
-
-                  return ListView.builder(
-                    itemCount: users.length,
-                    itemBuilder: (context, index) {
-                      return userComponent(userSnapshot: users[index]);
-                    },
-                  );
-                },
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -125,9 +127,11 @@ class _HomePageState extends State<HomePage> {
   Widget userComponent({required QueryDocumentSnapshot userSnapshot}) {
     // Extraire les données du snapshot
     Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+    print(userData);
 
     // Créer un objet User à partir des données
     User user = User.fromMap(userData);
+    print(user);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -167,30 +171,37 @@ class _HomePageState extends State<HomePage> {
           ),
           GestureDetector(
             onTap: () async {
+
+              if (user.isConfirmed) {
+                // Ne rien faire si la confirmation est déjà effectuée
+                return;
+              }
+
               DateTime now = DateTime.now();
-              String formattedDateTime =
-                  "${now.year}-${now.month}-${now.day}_${now.hour}:${now.minute}:${now.second}";
 
               // Ajouter l'utilisateur à la nouvelle collection
-              await FirebaseFirestore.instance
-                  .collection("Presence")
-                  .doc(formattedDateTime)
-                  .set({
+              await FirebaseFirestore.instance.collection("Presence").add({
                 "name": user.name,
                 "numtel": user.numtel,
                 "classe": user.classe,
                 // Ajoutez d'autres champs nécessaires
                 "confirmationDate": now,
-                "confirmed": !user
-                    .isConfirmed, // Mettez à jour en fonction du nouveau champ
+                "confirmed": true,
+              });
+
+              await FirebaseFirestore.instance
+                  .collection("Users")
+                  .doc(userSnapshot.id)
+                  .update({
+                "isConfirmed": true,
               });
 
               // Mettre à jour la confirmation dans Firestore
               setState(() {
-                if (!user.isConfirmed) {
-                  user.isConfirmed = true;
-                }
-              }); // Mettez à jour en fonction du nouveau champ
+                user.isConfirmed = true;
+              });
+
+              print(userData);
             },
             child: AnimatedContainer(
               height: 35,
@@ -210,8 +221,10 @@ class _HomePageState extends State<HomePage> {
               child: Center(
                 child: Text(
                   user.isConfirmed ? 'Confirmé' : 'Confirmer',
-                  style: TextStyle(
-                    color: user.isConfirmed ? Colors.white : Colors.white,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: "Poppins",
+                    fontSize: 12
                   ),
                 ),
               ),
