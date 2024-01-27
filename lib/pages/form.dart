@@ -41,6 +41,7 @@ class _FormPageState extends State<FormPage> {
         'name': name,
         'classe': classe,
         'numtel': numtel,
+        'isConfirmed' : false
       });
 
       nameController.clear();

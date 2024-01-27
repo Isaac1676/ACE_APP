@@ -11,18 +11,33 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late List<QueryDocumentSnapshot> users;
+  late List<QueryDocumentSnapshot> filteredUsers;
 
   @override
   void initState() {
     super.initState();
     users = [];
+    filteredUsers = [];
   }
 
   void onSearch(String search) {
     // Ajouter la logique de recherche ici
+    setState(() {
+      if (search.isEmpty) {
+        // If the search query is empty, show all users
+        filteredUsers = List.from(users);
+      } else {
+        // If there's a search query, filter users based on the query
+        filteredUsers = users
+            .where((user) =>
+                user["name"].toLowerCase().contains(search.toLowerCase()) ||
+                user["numtel"].toLowerCase().contains(search.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
-  void resetConfirmation() {
+  void resetConfirmation() async {
     // Ajouter la logique de réinitialisation de la confirmation ici
   }
 
@@ -62,8 +77,8 @@ class _HomePageState extends State<HomePage> {
                 height: 68,
                 child: TextField(
                   onChanged: onSearch,
-                  style:
-                      const TextStyle(color: Colors.white, fontFamily: "Poppins"),
+                  style: const TextStyle(
+                      color: Colors.white, fontFamily: "Poppins"),
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.grey[850],
@@ -89,13 +104,19 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 10),
               Expanded(
                 child: StreamBuilder(
-                  stream:
-                      FirebaseFirestore.instance.collection("Users").snapshots(),
+                  stream: FirebaseFirestore.instance
+                      .collection("Users")
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          strokeWidth: 3,
+                        ),
+                      );
                     }
-        
+
                     if (!snapshot.hasData) {
                       return const Text(
                         "Aucun utilisateur",
@@ -105,13 +126,15 @@ class _HomePageState extends State<HomePage> {
                             fontSize: 15),
                       );
                     }
-        
+
                     users = snapshot.data!.docs;
-        
+                    filteredUsers = List.from(users);
+
                     return ListView.builder(
-                      itemCount: users.length,
+                      itemCount: filteredUsers.length,
                       itemBuilder: (context, index) {
-                        return userComponent(userSnapshot: users[index]);
+                        return userComponent(
+                            userSnapshot: filteredUsers[index]);
                       },
                     );
                   },
@@ -171,7 +194,6 @@ class _HomePageState extends State<HomePage> {
           ),
           GestureDetector(
             onTap: () async {
-
               if (user.isConfirmed) {
                 // Ne rien faire si la confirmation est déjà effectuée
                 return;
@@ -222,10 +244,7 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   user.isConfirmed ? 'Confirmé' : 'Confirmer',
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontFamily: "Poppins",
-                    fontSize: 12
-                  ),
+                      color: Colors.white, fontFamily: "Poppins", fontSize: 12),
                 ),
               ),
             ),
