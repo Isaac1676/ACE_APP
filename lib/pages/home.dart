@@ -21,25 +21,46 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onSearch(String search) {
-    // Ajouter la logique de recherche ici
+  // Convertir le terme de recherche en minuscules pour une correspondance insensible à la casse
+  String searchLower = search.toLowerCase();
+
+  // Exécuter la requête Firestore pour obtenir les résultats correspondants
+  FirebaseFirestore.instance
+      .collection("Users")
+      .where("name", isGreaterThanOrEqualTo: searchLower)
+      .where("name", isLessThan: '${searchLower}z')
+      .snapshots()
+      .listen((QuerySnapshot<Map<String, dynamic>> snapshot) {
+    // Mettre à jour la liste des utilisateurs filtrés avec les résultats de la recherche
     setState(() {
-      if (search.isEmpty) {
-        // If the search query is empty, show all users
-        filteredUsers = List.from(users);
-      } else {
-        // If there's a search query, filter users based on the query
-        filteredUsers = users
-            .where((user) =>
-                user["name"].toLowerCase().contains(search.toLowerCase()) ||
-                user["numtel"].toLowerCase().contains(search.toLowerCase()))
-            .toList();
-      }
+      filteredUsers = snapshot.docs;
     });
-  }
+  });
+}
+
 
   void resetConfirmation() async {
-    // Ajouter la logique de réinitialisation de la confirmation ici
+  // Parcourir la liste des utilisateurs
+  for (var userSnapshot in users) {
+    // Extraire les données du snapshot
+    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+
+    // Vérifier si l'utilisateur est confirmé
+    if (userData["isConfirmed"]) {
+      // Mettre à jour l'état local (pour la réactivité dans l'interface utilisateur)
+      setState(() {
+        userData["isConfirmed"] = false;
+      });
+
+      // Mettre à jour le champ isConfirmed dans Firestore
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(userSnapshot.id)
+          .update({"isConfirmed": false});
+    }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -179,14 +200,17 @@ class _HomePageState extends State<HomePage> {
                     user.name,
                     style: const TextStyle(
                       fontSize: 17,
+                      fontFamily: "Poppins",
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "${user.numtel}[${user.classe}]",
-                    style: TextStyle(color: Colors.grey[500]),
+                    "${user.numtel} [${user.classe}]",
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontFamily: "Poppins"),
                   ),
                 ],
               )
@@ -202,13 +226,19 @@ class _HomePageState extends State<HomePage> {
               DateTime now = DateTime.now();
 
               // Ajouter l'utilisateur à la nouvelle collection
-              await FirebaseFirestore.instance.collection("Presence").add({
+              String collectionName =
+                  "${now.year}-${now.month}-${now.day}_confirmations";
+
+              // Mettre à jour la propriété isConfirmed dans Firestore
+              await FirebaseFirestore.instance
+                  .collection(collectionName)
+                  .doc()
+                  .set({
                 "name": user.name,
                 "numtel": user.numtel,
                 "classe": user.classe,
-                // Ajoutez d'autres champs nécessaires
                 "confirmationDate": now,
-                "confirmed": true,
+                "isConfirmed": true,
               });
 
               await FirebaseFirestore.instance

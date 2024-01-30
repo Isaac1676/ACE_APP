@@ -30,7 +30,7 @@ class _FormPageState extends State<FormPage> {
             'Utilisateur ajouté',
             style: TextStyle(fontFamily: "Poppins"),
           ),
-          duration: Duration(seconds: 5), // Durée d'affichage de la SnackBar
+          duration: Duration(seconds: 2), // Durée d'affichage de la SnackBar
         ),
       );
 
