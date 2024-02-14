@@ -14,7 +14,9 @@ class _FormPageState extends State<FormPage> {
   final nameController = TextEditingController();
   final classeController = TextEditingController();
   final numController = TextEditingController();
-  
+  final promotionController = TextEditingController();
+
+
   final _formKey = GlobalKey<FormState>(); // Add a GlobalKey for the form
 
   // login method
@@ -41,7 +43,7 @@ class _FormPageState extends State<FormPage> {
         'name': name,
         'classe': classe,
         'numtel': numtel,
-        'isConfirmed' : false
+        'isConfirmed': false
       });
 
       nameController.clear();
@@ -126,6 +128,24 @@ class _FormPageState extends State<FormPage> {
               ),
               const SizedBox(
                 height: 20,
+              ),
+
+              PromotionField(
+                hintText: "Promotion (IT1-IT12)",
+                controller: promotionController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Veuillez choisir votre promotion';
+                  } else if (!value.startsWith('IT')) {
+                    return 'La promotion doit commencer par "IT"';
+                  } else if (int.tryParse(value.substring(2)) == null) {
+                    return 'La promotion doit être un nombre';
+                  } else if (int.parse(value.substring(2)) < 1 ||
+                      int.parse(value.substring(2)) > 12) {
+                    return 'La promotion doit être entre IT1 et IT12';
+                  }
+                  return null;
+                },
               ),
 
               // Formulaire pour le numéro
