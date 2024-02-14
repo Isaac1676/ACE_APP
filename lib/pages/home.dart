@@ -40,7 +40,7 @@ void onSearch(String search) {
     setState(() {
       // Extraire les données de chaque document Firestore et les convertir en objets User
       users = snapshot.docs
-          .map((doc) => User.fromMap(doc.data() as Map<String, dynamic>)).cast<QueryDocumentSnapshot<Object?>?>()
+          .map((doc) => User.fromMap(doc.data())).cast<QueryDocumentSnapshot<Object?>?>()
           .toList();
       filteredUsers = List.from(users);
     });

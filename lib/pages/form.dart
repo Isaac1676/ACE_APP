@@ -16,16 +16,17 @@ class _FormPageState extends State<FormPage> {
   final numController = TextEditingController();
   final promotionController = TextEditingController();
 
-
   final _formKey = GlobalKey<FormState>(); // Add a GlobalKey for the form
 
   // login method
   void login() {
-    if (_formKey.currentState!.validate()) {
-      String name = nameController.text;
-      String classe = classeController.text;
-      String numtel = numController.text;
+  if (_formKey.currentState!.validate()) {
+    String name = nameController.text;
+    String classe = classeController.text.toUpperCase();
+    String numtel = numController.text;
+    String promotion = promotionController.text;
 
+    if (name.isNotEmpty && classe.isNotEmpty && numtel.isNotEmpty && promotion.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -43,14 +44,28 @@ class _FormPageState extends State<FormPage> {
         'name': name,
         'classe': classe,
         'numtel': numtel,
+        'promotion': promotion,
         'isConfirmed': false
       });
 
       nameController.clear();
       classeController.clear();
       numController.clear();
+      promotionController.clear();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Veuillez remplir tous les champs',
+            style: TextStyle(fontFamily: "Poppins"),
+          ),
+          duration: Duration(seconds: 2), // Durée d'affichage de la SnackBar
+        ),
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -132,20 +147,14 @@ class _FormPageState extends State<FormPage> {
 
               PromotionField(
                 hintText: "Promotion (IT1-IT12)",
-                controller: promotionController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez choisir votre promotion';
-                  } else if (!value.startsWith('IT')) {
-                    return 'La promotion doit commencer par "IT"';
-                  } else if (int.tryParse(value.substring(2)) == null) {
-                    return 'La promotion doit être un nombre';
-                  } else if (int.parse(value.substring(2)) < 1 ||
-                      int.parse(value.substring(2)) > 12) {
-                    return 'La promotion doit être entre IT1 et IT12';
-                  }
-                  return null;
+                selectedPromotion: promotionController.text,
+                onChanged: (value) {
+                  promotionController.text = value;
                 },
+              ),
+
+              const SizedBox(
+                height: 20,
               ),
 
               // Formulaire pour le numéro
