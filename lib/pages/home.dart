@@ -10,8 +10,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late List<QueryDocumentSnapshot> users;
-  late List<QueryDocumentSnapshot> filteredUsers;
+  
+  late List<QueryDocumentSnapshot?> users;
+  late List<QueryDocumentSnapshot?> filteredUsers;
 
   @override
   void initState() {
@@ -20,47 +21,53 @@ class _HomePageState extends State<HomePage> {
     filteredUsers = [];
   }
 
-  void onSearch(String search) {
-  // Convertir le terme de recherche en minuscules pour une correspondance insensible à la casse
+void onSearch(String search) {
   String searchLower = search.toLowerCase();
 
-  // Exécuter la requête Firestore pour obtenir les résultats correspondants
+  if (search.isEmpty) {
+    setState(() {
+      filteredUsers = List.from(users);
+    });
+    return;
+  }
+
   FirebaseFirestore.instance
       .collection("Users")
       .where("name", isGreaterThanOrEqualTo: searchLower)
       .where("name", isLessThan: '${searchLower}z')
       .snapshots()
       .listen((QuerySnapshot<Map<String, dynamic>> snapshot) {
-    // Mettre à jour la liste des utilisateurs filtrés avec les résultats de la recherche
     setState(() {
-      filteredUsers = snapshot.docs;
+      // Extraire les données de chaque document Firestore et les convertir en objets User
+      users = snapshot.docs
+          .map((doc) => User.fromMap(doc.data() as Map<String, dynamic>)).cast<QueryDocumentSnapshot<Object?>?>()
+          .toList();
+      filteredUsers = List.from(users);
     });
   });
 }
 
 
+
   void resetConfirmation() async {
-  // Parcourir la liste des utilisateurs
-  for (var userSnapshot in users) {
-    // Extraire les données du snapshot
-    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+    for (var userSnapshot in users) {
+      if (userSnapshot != null) {
+        Map<String, dynamic> userData =
+            userSnapshot.data() as Map<String, dynamic>;
 
-    // Vérifier si l'utilisateur est confirmé
-    if (userData["isConfirmed"]) {
-      // Mettre à jour l'état local (pour la réactivité dans l'interface utilisateur)
-      setState(() {
-        userData["isConfirmed"] = false;
-      });
+        if (userData["isConfirmed"]) {
+          setState(() {
+            userData["isConfirmed"] = false;
+          });
 
-      // Mettre à jour le champ isConfirmed dans Firestore
-      await FirebaseFirestore.instance
-          .collection("Users")
-          .doc(userSnapshot.id)
-          .update({"isConfirmed": false});
+          await FirebaseFirestore.instance
+              .collection("Users")
+              .doc(userSnapshot.id)
+              .update({"isConfirmed": false});
+        }
+      }
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -150,12 +157,12 @@ class _HomePageState extends State<HomePage> {
 
                     users = snapshot.data!.docs;
                     filteredUsers = List.from(users);
+                    print(filteredUsers);
 
                     return ListView.builder(
                       itemCount: filteredUsers.length,
                       itemBuilder: (context, index) {
-                        return userComponent(
-                            userSnapshot: filteredUsers[index]);
+                        return userComponent(userSnapshot: filteredUsers[index]);
                       },
                     );
                   },
@@ -168,14 +175,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget userComponent({required QueryDocumentSnapshot userSnapshot}) {
-    // Extraire les données du snapshot
-    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
-    print(userData);
+  Widget userComponent({required QueryDocumentSnapshot? userSnapshot}) {
+    if (userSnapshot == null) {
+      return const SizedBox(); // Rien à afficher si le snapshot est nul
+    }
 
-    // Créer un objet User à partir des données
+    Map<String, dynamic> userData =
+        userSnapshot.data() as Map<String, dynamic>;
+
     User user = User.fromMap(userData);
-    print(user);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -219,17 +227,13 @@ class _HomePageState extends State<HomePage> {
           GestureDetector(
             onTap: () async {
               if (user.isConfirmed) {
-                // Ne rien faire si la confirmation est déjà effectuée
                 return;
               }
 
               DateTime now = DateTime.now();
-
-              // Ajouter l'utilisateur à la nouvelle collection
               String collectionName =
                   "${now.year}-${now.month}-${now.day}_confirmations";
 
-              // Mettre à jour la propriété isConfirmed dans Firestore
               await FirebaseFirestore.instance
                   .collection(collectionName)
                   .doc()
@@ -248,7 +252,6 @@ class _HomePageState extends State<HomePage> {
                 "isConfirmed": true,
               });
 
-              // Mettre à jour la confirmation dans Firestore
               setState(() {
                 user.isConfirmed = true;
               });
