@@ -10,44 +10,39 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
   late List<QueryDocumentSnapshot?> users;
   late List<QueryDocumentSnapshot?> filteredUsers;
+  String searchQuery = "";
 
   @override
   void initState() {
     super.initState();
     users = [];
     filteredUsers = [];
+    _fetchUsers();
   }
 
-void onSearch(String search) {
-  String searchLower = search.toLowerCase();
-
-  if (search.isEmpty) {
-    setState(() {
-      filteredUsers = List.from(users);
-    });
-    return;
-  }
-
-  FirebaseFirestore.instance
-      .collection("Users")
-      .where("name", isGreaterThanOrEqualTo: searchLower)
-      .where("name", isLessThan: '${searchLower}z')
-      .snapshots()
-      .listen((QuerySnapshot<Map<String, dynamic>> snapshot) {
-    setState(() {
-      // Extraire les données de chaque document Firestore et les convertir en objets User
-      users = snapshot.docs
-          .map((doc) => User.fromMap(doc.data())).cast<QueryDocumentSnapshot<Object?>?>()
-          .toList();
-      filteredUsers = List.from(users);
-    });
-  });
+  void _fetchUsers() async {
+  final snapshot = await FirebaseFirestore.instance
+    .collection("Users")
+    .get();
+  users = snapshot.docs;
+  filteredUsers = List.from(users);
+  print('Fetched users: $users');
 }
 
 
+  void _onSearchTextChanged(String value) {
+    print('Search text changed: $value');
+    setState(() {
+      searchQuery = value;
+      filteredUsers = users
+          .where((user) =>
+              user!["name"].toLowerCase().contains(searchQuery.toLowerCase()))
+          .toList();
+      print('Filtered users: $filteredUsers');
+    });
+  }
 
   void resetConfirmation() async {
     for (var userSnapshot in users) {
@@ -104,7 +99,7 @@ void onSearch(String search) {
               SizedBox(
                 height: 68,
                 child: TextField(
-                  onChanged: onSearch,
+                  onChanged: _onSearchTextChanged,
                   style: const TextStyle(
                       color: Colors.white, fontFamily: "Poppins"),
                   decoration: InputDecoration(
@@ -162,7 +157,8 @@ void onSearch(String search) {
                     return ListView.builder(
                       itemCount: filteredUsers.length,
                       itemBuilder: (context, index) {
-                        return userComponent(userSnapshot: filteredUsers[index]);
+                        return userComponent(
+                            userSnapshot: filteredUsers[index]);
                       },
                     );
                   },
@@ -180,8 +176,7 @@ void onSearch(String search) {
       return const SizedBox(); // Rien à afficher si le snapshot est nul
     }
 
-    Map<String, dynamic> userData =
-        userSnapshot.data() as Map<String, dynamic>;
+    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
 
     User user = User.fromMap(userData);
 
@@ -217,8 +212,7 @@ void onSearch(String search) {
                   Text(
                     "${user.numtel} [${user.classe}]",
                     style: TextStyle(
-                      color: Colors.grey[500],
-                      fontFamily: "Poppins"),
+                        color: Colors.grey[500], fontFamily: "Poppins"),
                   ),
                 ],
               )
