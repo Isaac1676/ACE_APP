@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class MyTextField extends StatelessWidget {
   final String hintText;
@@ -10,8 +9,15 @@ class MyTextField extends StatelessWidget {
     super.key,
     required this.hintText,
     required this.controller,
-    required this.validator
-    });
+    this.validator = _defaultValidator,
+  });
+
+  static String? _defaultValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Ce champ ne doit pas être vide';
+    }
+    return null; // Value is not empty
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +29,27 @@ class MyTextField extends StatelessWidget {
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(10)),
+            borderRadius: BorderRadius.circular(10),
+          ),
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(10)),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.circular(10),
+          ),
           filled: true,
           fillColor: Colors.grey[850],
           hintText: hintText,
           hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade500),
         ),
-          
+        validator: validator, // Use the specified or default validator
       ),
     );
   }
 }
+
 
 class MyPhoneNumberField extends StatelessWidget {
   final String hintText;
@@ -47,7 +60,7 @@ class MyPhoneNumberField extends StatelessWidget {
     Key? key,
     required this.hintText,
     required this.controller,
-    required this.validator
+    required this.validator,
   }) : super(key: key);
 
   @override
@@ -56,7 +69,7 @@ class MyPhoneNumberField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextFormField(
         controller: controller,
-        keyboardType: TextInputType.phone, // Utilisez TextInputType.phone pour un clavier numérique
+        keyboardType: TextInputType.phone,
         style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
@@ -70,16 +83,37 @@ class MyPhoneNumberField extends StatelessWidget {
           filled: true,
           fillColor: Colors.grey[850],
           border: validator != null ? OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red), // Utilisation de la bordure d'erreur
+            borderSide: const BorderSide(color: Colors.red), // Error border
             borderRadius: BorderRadius.circular(10.0),
           ) : null,
           hintText: hintText,
           hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade500),
+          prefixText: "+225 ", // Prepend country code with space
+          prefixStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+          ),
         ),
+        // Regex validation for 10 digits
+        validator: (value) => _validatePhoneNumber(value),
       ),
     );
   }
+
+  // Custom validation function for 10 digits
+  String? _validatePhoneNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your phone number';
+    }
+
+    final regex = RegExp(r"^\d{10}$"); // Ensure 10 digits
+    if (!regex.hasMatch(value)) {
+      return 'Numéro Invalide';
+    }
+    return null;
+  }
 }
+
 
 class PromotionField extends StatefulWidget {
   final String hintText;
@@ -98,7 +132,7 @@ class PromotionField extends StatefulWidget {
 }
 
 class _PromotionFieldState extends State<PromotionField> {
-  List<String> itemList = List.generate(12, (index) => 'IT${index + 1}');
+  final List<String> itemList = List.generate(12, (index) => 'IT${index + 1}');
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +140,9 @@ class _PromotionFieldState extends State<PromotionField> {
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: SingleChildScrollView(
         child: DropdownButtonFormField<String>(
-          value: itemList.contains(widget.selectedPromotion) ? widget.selectedPromotion : null,
+          value: itemList.contains(widget.selectedPromotion)
+              ? widget.selectedPromotion
+              : null,
           items: itemList.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -118,7 +154,12 @@ class _PromotionFieldState extends State<PromotionField> {
               widget.onChanged(value);
             }
           },
-          hint: Text(widget.hintText, style: TextStyle(fontSize: 15, color: Colors.grey.shade500, fontFamily: "Poppins")),
+          hint: Text(widget.hintText,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey.shade500,
+                fontFamily: "Poppins",
+              )),
           isExpanded: true,
           elevation: 0,
           dropdownColor: Colors.grey[850],
@@ -132,9 +173,19 @@ class _PromotionFieldState extends State<PromotionField> {
               borderSide: const BorderSide(color: Colors.white),
               borderRadius: BorderRadius.circular(10),
             ),
+            errorBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.red),
+              borderRadius: BorderRadius.circular(10),
+            ),
             filled: true,
             fillColor: Colors.grey[850],
           ),
+          validator: (value) {
+            if (value == null) {
+              return "Veuillez choisir votre promotion"; // Clear and concise error message
+            }
+            return null; // Value is valid
+          },
         ),
       ),
     );

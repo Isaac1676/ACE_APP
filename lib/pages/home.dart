@@ -12,37 +12,35 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late List<QueryDocumentSnapshot?> users;
   late List<QueryDocumentSnapshot?> filteredUsers;
-  String searchQuery = "";
 
   @override
   void initState() {
     super.initState();
     users = [];
     filteredUsers = [];
-    _fetchUsers();
   }
 
-  void _fetchUsers() async {
-  final snapshot = await FirebaseFirestore.instance
+void onSearch(String search) {
+  if (search.isEmpty) {
+    filteredUsers.clear();
+    setState(() {});
+    return;
+  }
+
+  String searchLower = search.toLowerCase();
+
+  // Recherche basée sur un index inférieur pour insensibilité à la casse
+  FirebaseFirestore.instance
     .collection("Users")
-    .get();
-  users = snapshot.docs;
-  filteredUsers = List.from(users);
-  print('Fetched users: $users');
+    .where("name", isGreaterThanOrEqualTo: searchLower)
+    .where("name", isLessThanOrEqualTo: '$searchLower\uf8ff')
+    .get()
+    .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
+      filteredUsers = snapshot.docs.where((doc) => doc.exists).toList();
+      setState(() {});
+    });
 }
 
-
-  void _onSearchTextChanged(String value) {
-    print('Search text changed: $value');
-    setState(() {
-      searchQuery = value;
-      filteredUsers = users
-          .where((user) =>
-              user!["name"].toLowerCase().contains(searchQuery.toLowerCase()))
-          .toList();
-      print('Filtered users: $filteredUsers');
-    });
-  }
 
   void resetConfirmation() async {
     for (var userSnapshot in users) {
@@ -99,7 +97,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: 68,
                 child: TextField(
-                  onChanged: _onSearchTextChanged,
+                  onChanged: onSearch,
                   style: const TextStyle(
                       color: Colors.white, fontFamily: "Poppins"),
                   decoration: InputDecoration(

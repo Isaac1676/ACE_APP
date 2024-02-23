@@ -119,12 +119,6 @@ class _FormPageState extends State<FormPage> {
               MyTextField(
                 hintText: "Nom et prénom",
                 controller: nameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer votre nom et prénom';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(
                 height: 20,
@@ -134,12 +128,6 @@ class _FormPageState extends State<FormPage> {
               MyTextField(
                 hintText: "Classe",
                 controller: classeController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer votre classe';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(
                 height: 20,
