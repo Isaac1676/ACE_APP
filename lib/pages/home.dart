@@ -10,37 +10,47 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late List<QueryDocumentSnapshot?> users;
-  late List<QueryDocumentSnapshot?> filteredUsers;
+  final _searchController = TextEditingController();
+  List<QueryDocumentSnapshot?> users = [];
+  List<QueryDocumentSnapshot?> filteredUsers = [];
 
   @override
   void initState() {
     super.initState();
-    users = [];
-    filteredUsers = [];
-  }
-
-void onSearch(String search) {
-  if (search.isEmpty) {
-    filteredUsers.clear();
-    setState(() {});
-    return;
-  }
-
-  String searchLower = search.toLowerCase();
-
-  // Recherche basée sur un index inférieur pour insensibilité à la casse
-  FirebaseFirestore.instance
-    .collection("Users")
-    .where("name", isGreaterThanOrEqualTo: searchLower)
-    .where("name", isLessThanOrEqualTo: '$searchLower\uf8ff')
-    .get()
-    .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
-      filteredUsers = snapshot.docs.where((doc) => doc.exists).toList();
-      setState(() {});
+    // Fetch initial user data and listen for changes
+    FirebaseFirestore.instance
+        .collection("Users")
+        .snapshots()
+        .listen((snapshot) {
+      setState(() {
+        users = snapshot.docs;
+      });
     });
-}
+  }
 
+  void onSearch(String search) {
+    final search = _searchController.text;
+    if (search.isEmpty) {
+      // No search term, display all users
+      setState(() {
+        // Store all users for efficient filtering later
+        filteredUsers = List.from(users);
+      });
+    } else {
+      String searchLower = search.toLowerCase();
+    // Optimized Firestore query for case-insensitive name filtering
+    FirebaseFirestore.instance
+        .collection("Users")
+        .where("name", isGreaterThanOrEqualTo: searchLower)
+        .where("name", isLessThanOrEqualTo: '$searchLower\uf8ff')
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
+      setState(() {
+        filteredUsers = snapshot.docs; // Update filteredUsers with results
+      });
+    });
+    }
+  }
 
   void resetConfirmation() async {
     for (var userSnapshot in users) {
@@ -97,6 +107,7 @@ void onSearch(String search) {
               SizedBox(
                 height: 68,
                 child: TextField(
+                  controller: _searchController,
                   onChanged: onSearch,
                   style: const TextStyle(
                       color: Colors.white, fontFamily: "Poppins"),
@@ -155,8 +166,18 @@ void onSearch(String search) {
                     return ListView.builder(
                       itemCount: filteredUsers.length,
                       itemBuilder: (context, index) {
-                        return userComponent(
-                            userSnapshot: filteredUsers[index]);
+                        return filteredUsers.isNotEmpty
+                            ? userComponent(userSnapshot: filteredUsers[index])
+                            : const Center(
+                                child: Text(
+                                  "Aucun utilisateur trouvé ",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontFamily: "Poppins",
+                                  ),
+                                ),
+                              );
                       },
                     );
                   },

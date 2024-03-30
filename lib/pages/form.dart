@@ -20,13 +20,12 @@ class _FormPageState extends State<FormPage> {
 
   // login method
   void login() {
-  if (_formKey.currentState!.validate()) {
-    String name = nameController.text;
-    String classe = classeController.text.toUpperCase();
-    String numtel = numController.text;
-    String promotion = promotionController.text;
+    if (_formKey.currentState!.validate()) {
+      String name = nameController.text;
+      String classe = classeController.text.toUpperCase();
+      String numtel = numController.text;
+      String promotion = promotionController.text;
 
-    if (name.isNotEmpty && classe.isNotEmpty && numtel.isNotEmpty && promotion.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -52,20 +51,8 @@ class _FormPageState extends State<FormPage> {
       classeController.clear();
       numController.clear();
       promotionController.clear();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Veuillez remplir tous les champs',
-            style: TextStyle(fontFamily: "Poppins"),
-          ),
-          duration: Duration(seconds: 2), // Durée d'affichage de la SnackBar
-        ),
-      );
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
