@@ -12,6 +12,8 @@ class MyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -19,14 +21,14 @@ class MyButton extends StatelessWidget {
           color: Colors.blue,
           borderRadius: BorderRadius.circular(8)
         ),
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.symmetric(horizontal: 25),
+        padding: EdgeInsets.all(screenWidth * 0.04),
+        margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
         child: Center(
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: "Poppins",
-              fontSize: 17,
+              fontSize: screenWidth * 0.035,
               color: Colors.white
             ),
           ),

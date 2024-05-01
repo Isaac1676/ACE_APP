@@ -5,10 +5,10 @@ class BottomNavigation extends StatefulWidget {
   final int currentIndex;
 
   const BottomNavigation({
-    Key? key, // Ajouter une clé facultative
+    super.key, // Ajouter une clé facultative
     required this.onIndexChanged,
     required this.currentIndex,
-  }) : super(key: key);
+  });
 
   @override
   State<BottomNavigation> createState() => _BottomNavigationState();

@@ -1,30 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
-  final String? Function(String?)? validator;
+  final bool isClasse;
 
   const MyTextField({
     super.key,
     required this.hintText,
     required this.controller,
-    this.validator = _defaultValidator,
+    required this.isClasse
   });
-
-  static String? _defaultValidator(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Ce champ ne doit pas être vide';
-    }
-    return null; // Value is not empty
-  }
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    TextCapitalization textCapital() {
+      if (isClasse) {
+        return TextCapitalization.characters;
+      } else {
+        return TextCapitalization.none;
+      }
+    }
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-      child: TextFormField(
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
+      child: TextField(
         controller: controller,
+        textCapitalization: textCapital(),
         style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
@@ -42,32 +47,31 @@ class MyTextField extends StatelessWidget {
           filled: true,
           fillColor: Colors.grey[850],
           hintText: hintText,
-          hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade500),
-        ),
-        validator: validator, // Use the specified or default validator
+          hintStyle: TextStyle(
+              fontSize: screenWidth * 0.035, color: Colors.grey.shade500),
+        ), // Use the specified or default validator
       ),
     );
   }
 }
 
-
 class MyPhoneNumberField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
-  final String? Function(String?)? validator;
 
   const MyPhoneNumberField({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.controller,
-    required this.validator,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-      child: TextFormField(
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
+      child: TextField(
         controller: controller,
         keyboardType: TextInputType.phone,
         style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
@@ -82,38 +86,14 @@ class MyPhoneNumberField extends StatelessWidget {
           ),
           filled: true,
           fillColor: Colors.grey[850],
-          border: validator != null ? OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red), // Error border
-            borderRadius: BorderRadius.circular(10.0),
-          ) : null,
           hintText: hintText,
-          hintStyle: TextStyle(fontSize: 15, color: Colors.grey.shade500),
-          prefixText: "+225 ", // Prepend country code with space
-          prefixStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-          ),
+          hintStyle: TextStyle(
+              fontSize: screenWidth * 0.035, color: Colors.grey.shade500),
         ),
-        // Regex validation for 10 digits
-        validator: (value) => _validatePhoneNumber(value),
       ),
     );
   }
-
-  // Custom validation function for 10 digits
-  String? _validatePhoneNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your phone number';
-    }
-
-    final regex = RegExp(r"^\d{10}$"); // Ensure 10 digits
-    if (!regex.hasMatch(value)) {
-      return 'Numéro Invalide';
-    }
-    return null;
-  }
 }
-
 
 class PromotionField extends StatefulWidget {
   final String hintText;
@@ -121,23 +101,30 @@ class PromotionField extends StatefulWidget {
   final void Function(String) onChanged;
 
   const PromotionField({
-    Key? key,
+    super.key, // Ajout de "Key key" pour éviter une erreur
     required this.hintText,
     required this.selectedPromotion,
     required this.onChanged,
-  }) : super(key: key);
+  }); // Utilisation de "super(key: key)"
 
   @override
   _PromotionFieldState createState() => _PromotionFieldState();
 }
 
 class _PromotionFieldState extends State<PromotionField> {
-  final List<String> itemList = List.generate(12, (index) => 'IT${index + 1}');
+  final List<String> itemList = [
+    'Hors ESATIC',
+    ...List.generate(12, (index) => 'IT${index + 1}')
+  ];
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.06,
+      ),
       child: SingleChildScrollView(
         child: DropdownButtonFormField<String>(
           value: itemList.contains(widget.selectedPromotion)
@@ -156,14 +143,15 @@ class _PromotionFieldState extends State<PromotionField> {
           },
           hint: Text(widget.hintText,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: screenWidth * 0.035,
                 color: Colors.grey.shade500,
                 fontFamily: "Poppins",
               )),
           isExpanded: true,
           elevation: 0,
           dropdownColor: Colors.grey[850],
-          icon: const Icon(Icons.keyboard_arrow_down_outlined, color: Colors.white),
+          icon: const Icon(Icons.keyboard_arrow_down_outlined,
+              color: Colors.white),
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderSide: const BorderSide(color: Colors.transparent),
@@ -180,12 +168,57 @@ class _PromotionFieldState extends State<PromotionField> {
             filled: true,
             fillColor: Colors.grey[850],
           ),
-          validator: (value) {
-            if (value == null) {
-              return "Veuillez choisir votre promotion"; // Clear and concise error message
-            }
-            return null; // Value is valid
-          },
+        ),
+      ),
+    );
+  }
+}
+
+class Textfield extends StatelessWidget {
+  final TextEditingController? controller;
+  final void Function(String)? onChanged;
+
+  const Textfield({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.04,
+      ),
+      child: SizedBox(
+        height: screenHeight * 0.07,
+        child: TextField(
+          controller: controller,
+          onChanged: onChanged,
+          style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.grey[850],
+            contentPadding: EdgeInsets.all(screenWidth * 0.02),
+            prefixIcon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50),
+              borderSide: const BorderSide(color: Colors.white),
+            ),
+            hintStyle: TextStyle(
+                fontSize: screenWidth * 0.035, color: Colors.grey.shade500),
+            hintText: "Rechercher votre nom",
+          ),
         ),
       ),
     );
