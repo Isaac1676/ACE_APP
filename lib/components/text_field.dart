@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class MyTextField extends StatelessWidget {
   final String hintText;
@@ -114,7 +113,7 @@ class PromotionField extends StatefulWidget {
 class _PromotionFieldState extends State<PromotionField> {
   final List<String> itemList = [
     'Hors ESATIC',
-    ...List.generate(12, (index) => 'IT${index + 1}')
+    ...List.generate(14, (index) => 'IT${index + 1}')
   ];
 
   @override
