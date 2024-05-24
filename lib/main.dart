@@ -1,18 +1,18 @@
 import 'package:ace_app/database/ace_database.dart';
+import 'package:ace_app/firebase_options.dart';
+import 'package:ace_app/pages/form.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:ace_app/pages/home.dart';
 import 'package:provider/provider.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await ACEDatabase.initialize();
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ACEDatabase(), 
-      child: const MyApp()
-    )
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
+  await ACEDatabase.initialize();
+  runApp(ChangeNotifierProvider(
+      create: (context) => ACEDatabase(), child: const MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -23,12 +23,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage()
-    );
+        debugShowCheckedModeBanner: false, home: FormPage());
   }
 }

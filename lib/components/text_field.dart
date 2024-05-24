@@ -29,7 +29,7 @@ class MyTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         textCapitalization: textCapital(),
-        style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
+        style: const TextStyle(color: Colors.white, fontFamily: "Gramatika"),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.transparent),
@@ -73,7 +73,7 @@ class MyPhoneNumberField extends StatelessWidget {
       child: TextField(
         controller: controller,
         keyboardType: TextInputType.phone,
-        style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
+        style: const TextStyle(color: Colors.white, fontFamily: "Gramatika"),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.transparent),
@@ -94,26 +94,27 @@ class MyPhoneNumberField extends StatelessWidget {
   }
 }
 
-class PromotionField extends StatefulWidget {
+class AppartField extends StatefulWidget {
   final String hintText;
-  final String selectedPromotion;
+  final String selectedAppart;
   final void Function(String) onChanged;
 
-  const PromotionField({
+  const AppartField({
     super.key, // Ajout de "Key key" pour éviter une erreur
     required this.hintText,
-    required this.selectedPromotion,
+    required this.selectedAppart,
     required this.onChanged,
   }); // Utilisation de "super(key: key)"
 
   @override
-  _PromotionFieldState createState() => _PromotionFieldState();
+  _AppartFieldState createState() => _AppartFieldState();
 }
 
-class _PromotionFieldState extends State<PromotionField> {
+class _AppartFieldState extends State<AppartField> {
   final List<String> itemList = [
     'Hors ESATIC',
-    ...List.generate(14, (index) => 'IT${index + 1}')
+    'ACE',
+    'CCEE',
   ];
 
   @override
@@ -126,8 +127,8 @@ class _PromotionFieldState extends State<PromotionField> {
       ),
       child: SingleChildScrollView(
         child: DropdownButtonFormField<String>(
-          value: itemList.contains(widget.selectedPromotion)
-              ? widget.selectedPromotion
+          value: itemList.contains(widget.selectedAppart)
+              ? widget.selectedAppart
               : null,
           items: itemList.map((String value) {
             return DropdownMenuItem<String>(
@@ -144,7 +145,7 @@ class _PromotionFieldState extends State<PromotionField> {
               style: TextStyle(
                 fontSize: screenWidth * 0.035,
                 color: Colors.grey.shade500,
-                fontFamily: "Poppins",
+                fontFamily: "Gramatika",
               )),
           isExpanded: true,
           elevation: 0,
@@ -158,10 +159,6 @@ class _PromotionFieldState extends State<PromotionField> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.red),
               borderRadius: BorderRadius.circular(10),
             ),
             filled: true,
@@ -197,7 +194,7 @@ class Textfield extends StatelessWidget {
         child: TextField(
           controller: controller,
           onChanged: onChanged,
-          style: const TextStyle(color: Colors.white, fontFamily: "Poppins"),
+          style: const TextStyle(color: Colors.white, fontFamily: "Gramatika"),
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.grey[850],

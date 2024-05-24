@@ -1,7 +1,6 @@
 import 'package:ace_app/components/button.dart';
 import 'package:ace_app/database/ace_database.dart';
 import 'package:ace_app/models/user.dart';
-import 'package:ace_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:ace_app/components/text_field.dart';
 import 'package:provider/provider.dart';
@@ -15,52 +14,69 @@ class FormPage extends StatefulWidget {
 
 class _FormPageState extends State<FormPage> {
   final nameController = TextEditingController();
-  final classeController = TextEditingController();
+  final emailController = TextEditingController();
   final numController = TextEditingController();
-  final promotionController = TextEditingController();
+  final appartController = TextEditingController();
+  final invitController = TextEditingController();
 
   // login method
   void login() async {
     if (nameController.text.isNotEmpty &&
         numController.text.isNotEmpty &&
-        promotionController.text.isNotEmpty && 
-        classeController.text.isNotEmpty) {
+        appartController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
+        invitController.text.isNotEmpty) {
       try {
-        User newUser = User(
-            name: nameController.text,
-            promotion: promotionController.text,
-            numtel: numController.text,
-            classe: classeController.text,
-            isConfirm: false);
+        if (emailController.text.contains("@")) {
+          User newUser = User(
+              name: nameController.text,
+              apart: appartController.text,
+              numtel: numController.text,
+              email: emailController.text,
+              inviteur: invitController.text);
 
-        await context.read<ACEDatabase>().addNewUser(newUser);
+          await context.read<ACEDatabase>().addNewUser(newUser);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Utilisateur Ajouté",
-              style: TextStyle(
-                fontFamily: "Poppins",
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                "Utilisateur Ajouté",
+                style: TextStyle(
+                  fontFamily: "Gramatika",
+                ),
               ),
+              duration:
+                  Duration(seconds: 2), // Durée d'affichage de la SnackBar
             ),
-            duration: Duration(seconds: 2), // Durée d'affichage de la SnackBar
-          ),
-        );
+          );
 
-        nameController.clear();
-        classeController.clear();
-        numController.clear();
-        promotionController.clear();
-
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const HomePage()));
+          nameController.clear();
+          emailController.clear();
+          invitController.clear();
+          numController.clear();
+          appartController.clear();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                "Email incorrect",
+                style: TextStyle(
+                  fontFamily: "Gramatika",
+                ),
+              ),
+              backgroundColor: Colors.red,
+              duration:
+                  Duration(seconds: 2), // Durée d'affichage de la SnackBar
+            ),
+          );
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               "Erreur : $e",
               style: const TextStyle(
-                fontFamily: "Poppins",
+                fontFamily: "Gramatika",
               ),
             ),
             backgroundColor: Colors.red,
@@ -75,7 +91,7 @@ class _FormPageState extends State<FormPage> {
           content: Text(
             "Veuillez remplir tous les champs ci-dessus",
             style: TextStyle(
-              fontFamily: "Poppins",
+              fontFamily: "Gramatika",
             ),
           ),
           backgroundColor: Colors.red,
@@ -93,18 +109,19 @@ class _FormPageState extends State<FormPage> {
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        leading: IconButton(
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const HomePage())),
-            icon: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: Colors.white,
-            )),
+        actions: [
+          IconButton(
+              onPressed: () => Provider.of<ACEDatabase>(context, listen: false).syncDataWithFirestore(),
+              icon: const Icon(
+                Icons.refresh_rounded,
+                color: Colors.white,
+              ))
+        ],
         elevation: 0,
         title: Text(
           "F O R M U L A I R E",
           style: TextStyle(
-            fontFamily: "Poppins",
+            fontFamily: "Gramatika",
             fontSize: screenWidth * 0.055,
             color: Colors.white,
           ),
@@ -117,7 +134,7 @@ class _FormPageState extends State<FormPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              height: screenHeight * 0.05,
+              height: screenHeight * 0.03,
             ),
 
             // Textes de présentation
@@ -125,7 +142,7 @@ class _FormPageState extends State<FormPage> {
               child: Text(
                 "Bienvenue chez nous",
                 style: TextStyle(
-                  fontFamily: "Poppins",
+                  fontFamily: "Gramatika",
                   fontSize: screenWidth * 0.065,
                   color: Colors.white,
                 ),
@@ -134,7 +151,7 @@ class _FormPageState extends State<FormPage> {
             Text(
               "ACE FAMILY",
               style: TextStyle(
-                fontFamily: "Poppins",
+                fontFamily: "Gramatika",
                 fontSize: screenWidth * 0.1,
                 color: Colors.blue,
                 fontWeight: FontWeight.bold,
@@ -151,29 +168,16 @@ class _FormPageState extends State<FormPage> {
               isClasse: false,
             ),
             SizedBox(
-              height: screenHeight * 0.045,
+              height: screenHeight * 0.04,
             ),
 
-            // Formulaire pour la classe
             MyTextField(
-              hintText: "Classe",
-              controller: classeController,
-              isClasse: true,
+              hintText: "Email",
+              controller: emailController,
+              isClasse: false,
             ),
             SizedBox(
-              height: screenHeight * 0.045,
-            ),
-
-            PromotionField(
-              hintText: "Promotion (IT1-IT12)",
-              selectedPromotion: promotionController.text,
-              onChanged: (value) {
-                promotionController.text = value;
-              },
-            ),
-
-            SizedBox(
-              height: screenHeight * 0.045,
+              height: screenHeight * 0.04,
             ),
 
             // Formulaire pour le numéro
@@ -182,9 +186,29 @@ class _FormPageState extends State<FormPage> {
               controller: numController,
             ),
             SizedBox(
-              height: screenHeight * 0.055,
+              height: screenHeight * 0.04,
             ),
 
+            AppartField(
+              hintText: "Appartenance",
+              selectedAppart: appartController.text,
+              onChanged: (value) {
+                appartController.text = value;
+              },
+            ),
+            SizedBox(
+              height: screenHeight * 0.04,
+            ),
+
+            MyTextField(
+              hintText: "Inviteur",
+              controller: invitController,
+              isClasse: false,
+            ),
+
+            SizedBox(
+              height: screenHeight * 0.05,
+            ),
             // Bouton d'inscription
             MyButton(
               text: "S'enregister",

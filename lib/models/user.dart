@@ -6,10 +6,20 @@ part 'user.g.dart';
 class User {
   Id id = Isar.autoIncrement;
   String name;
-  String classe;
-  String promotion;
+  String email;
+  String apart;
+  String inviteur;
   String numtel;
-  bool isConfirm;
 
-  User({required this.name, required this.classe, required this.promotion, required this.numtel, this.isConfirm = false});
+  User({required this.name, required this.email, required this.numtel, required this.apart, required this.inviteur});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Nom': name,
+      'Email': email,
+      'Apart': apart,
+      'inviteur': inviteur,
+      'numtel': numtel,
+    };
+  }
 }

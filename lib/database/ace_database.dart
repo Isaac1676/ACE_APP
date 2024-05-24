@@ -1,19 +1,25 @@
-import 'package:ace_app/models/confirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:ace_app/models/user.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ACEDatabase extends ChangeNotifier {
   static late Isar isar;
+  static late FirebaseFirestore firestore;
 
   // INITIALIZE DATABASE
   static Future<void> initialize() async {
     final dir = await getApplicationDocumentsDirectory();
     isar = await Isar.open(
-      [UserSchema, ConfirmationSchema],
+      [UserSchema],
       directory: dir.path,
     );
+
+    // Initialize Firebase
+    await Firebase.initializeApp();
+    firestore = FirebaseFirestore.instance;
   }
 
   // list of child
@@ -34,41 +40,17 @@ class ACEDatabase extends ChangeNotifier {
     notifyListeners();
   }
 
-  // SEARCH - SEARCH BIRTHDAYS BY NAME
-  Future<void> searchByName(String searchTerm) async {
-    final searchResults =
-        await isar.users.where().filter().nameContains(searchTerm).findAll();
-    aceList.clear();
-    aceList.addAll(searchResults);
-    notifyListeners();
-  }
+  // SYNC DATA WITH FIRESTORE
+  Future<void> syncDataWithFirestore() async {
+    // Fetch all users from Isar
+    await fetchUsers();
 
-  // UPDATE - UPDATE STATE BY NAME
-  void updateConfirm(int index, bool newValue) {
-    final user = aceList[index];
-    user.isConfirm = newValue;
+    // Get the reference to the Firestore collection
+    CollectionReference usersCollection = firestore.collection('Users');
 
-    Confirmation confirmation =
-        Confirmation(name: user.name, date: DateTime.now());
-
-    isar.writeTxn(() async {
-      await isar.users.put(user);
-    });
-
-    isar.writeTxn(() async {
-      await isar.confirmations.put(confirmation);
-    });
-    notifyListeners();
-  }
-
-  //REFRESH - Resfresh confirmation
-  void refreshConfirm() {
-    isar.writeTxn(() async {
-      for (var user in aceList) {
-        user.isConfirm = false;
-        await isar.users.put(user);
-      }
-    });
-    notifyListeners();
+    // Add users from Isar to Firestore
+    for (User user in aceList) {
+      await usersCollection.add(user.toJson());
+    }
   }
 }
