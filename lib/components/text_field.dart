@@ -29,25 +29,23 @@ class MyTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         textCapitalization: textCapital(),
-        style: const TextStyle(color: Colors.white, fontFamily: "Gramatika"),
+        style: const TextStyle(color: Color(0xFFcc4e5c), fontFamily: "Gramatika"),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.transparent),
+            borderSide: BorderSide(color: Color(0xFFeec4c9)),
             borderRadius: BorderRadius.circular(10),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
+            borderSide: const BorderSide(color: Color(0xFFcc4e5c)),
             borderRadius: BorderRadius.circular(10),
           ),
           errorBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.red),
             borderRadius: BorderRadius.circular(10),
           ),
-          filled: true,
-          fillColor: Colors.grey[850],
           hintText: hintText,
           hintStyle: TextStyle(
-              fontSize: screenWidth * 0.035, color: Colors.grey.shade500),
+              fontSize: screenWidth * 0.04, color: Colors.black45),
         ), // Use the specified or default validator
       ),
     );
@@ -73,21 +71,19 @@ class MyPhoneNumberField extends StatelessWidget {
       child: TextField(
         controller: controller,
         keyboardType: TextInputType.phone,
-        style: const TextStyle(color: Colors.white, fontFamily: "Gramatika"),
+        style: const TextStyle(color: Color(0xFFcc4e5c), fontFamily: "Gramatika"),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.transparent),
+            borderSide: BorderSide(color: Color(0xFFeec4c9)),
             borderRadius: BorderRadius.circular(10),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
+            borderSide: const BorderSide(color: Color(0xFFcc4e5c)),
             borderRadius: BorderRadius.circular(10),
           ),
-          filled: true,
-          fillColor: Colors.grey[850],
           hintText: hintText,
           hintStyle: TextStyle(
-              fontSize: screenWidth * 0.035, color: Colors.grey.shade500),
+              fontSize: screenWidth * 0.04, color: Colors.black45),
         ),
       ),
     );
@@ -133,7 +129,7 @@ class _AppartFieldState extends State<AppartField> {
           items: itemList.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(value, style: const TextStyle(color: Colors.white)),
+              child: Text(value, style: const TextStyle(color: Color(0xffcc4e5c))),
             );
           }).toList(),
           onChanged: (value) {
@@ -143,26 +139,24 @@ class _AppartFieldState extends State<AppartField> {
           },
           hint: Text(widget.hintText,
               style: TextStyle(
-                fontSize: screenWidth * 0.035,
-                color: Colors.grey.shade500,
+                fontSize: screenWidth * 0.04,
+                color: Colors.black45,
                 fontFamily: "Gramatika",
               )),
           isExpanded: true,
           elevation: 0,
-          dropdownColor: Colors.grey[850],
+          dropdownColor: Color(0xffeee9da),
           icon: const Icon(Icons.keyboard_arrow_down_outlined,
-              color: Colors.white),
+              color: Colors.black45),
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.transparent),
+              borderSide: BorderSide(color: Color(0xFFeec4c9)),
               borderRadius: BorderRadius.circular(10),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.white),
+              borderSide: const BorderSide(color: Color(0xffcc4e5c)),
               borderRadius: BorderRadius.circular(10),
             ),
-            filled: true,
-            fillColor: Colors.grey[850],
           ),
         ),
       ),

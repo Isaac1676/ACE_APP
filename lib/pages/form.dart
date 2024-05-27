@@ -107,27 +107,27 @@ class _FormPageState extends State<FormPage> {
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: const Color(0xFFeee9da),
       appBar: AppBar(
         actions: [
           IconButton(
               onPressed: () => Provider.of<ACEDatabase>(context, listen: false).syncDataWithFirestore(),
               icon: const Icon(
                 Icons.refresh_rounded,
-                color: Colors.white,
+                color: Color(0xFFcc4e5c),
               ))
         ],
         elevation: 0,
         title: Text(
-          "F O R M U L A I R E",
+          "E N R E G I S T R E M E N T",
           style: TextStyle(
             fontFamily: "Gramatika",
             fontSize: screenWidth * 0.055,
-            color: Colors.white,
+            color: const Color(0xFFcc4e5c),
           ),
         ),
         toolbarHeight: screenHeight * 0.08,
-        backgroundColor: Colors.grey[850],
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -144,7 +144,7 @@ class _FormPageState extends State<FormPage> {
                 style: TextStyle(
                   fontFamily: "Gramatika",
                   fontSize: screenWidth * 0.065,
-                  color: Colors.white,
+                  color: Color(0xFFc19a6b),
                 ),
               ),
             ),
@@ -153,7 +153,7 @@ class _FormPageState extends State<FormPage> {
               style: TextStyle(
                 fontFamily: "Gramatika",
                 fontSize: screenWidth * 0.1,
-                color: Colors.blue,
+                color: const Color(0xFFcc4e5c),
                 fontWeight: FontWeight.bold,
               ),
             ),
