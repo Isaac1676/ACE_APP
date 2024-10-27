@@ -1,9 +1,11 @@
+// ignore_for_file: unrelated_type_equality_checks
+
+import 'package:ace_app/database/ace_database.dart';
+import 'package:ace_app/models/user.dart';// Assurez-vous que le chemin est correct
 import 'package:ace_app/components/list_tile.dart';
 import 'package:ace_app/components/text_field.dart';
-import 'package:ace_app/database/ace_database.dart';
 import 'package:ace_app/pages/form.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,31 +16,33 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController searchController = TextEditingController();
-  bool isConfirmed = false;
+  List<User> currentUsers = []; // Liste pour stocker les utilisateurs
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ACEDatabase>().fetchUsers();
-    });
+    fetchUsers(); // Charger les utilisateurs au démarrage
   }
 
-  void performSearch(String searchTerm) {
+  void fetchUsers() async {
+    currentUsers = await DatabaseService.instance
+        .getAllUsers(); // Appeler la méthode getAllUsers
+    setState(() {}); // Mettre à jour l'état pour rafraîchir l'UI
+  }
+
+  void performSearch(String searchTerm) async {
     if (searchTerm.isEmpty) {
-      context.read<ACEDatabase>().fetchUsers();
+      fetchUsers(); // Recharger tous les utilisateurs
     } else {
-      context.read<ACEDatabase>().searchByName(searchTerm);
+      currentUsers = await DatabaseService.instance
+          .searchUserByName(searchTerm); // Rechercher par nom
+      setState(() {}); // Mettre à jour l'état
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    //database options
-    final aceDatabase = context.watch<ACEDatabase>();
-    final currentUsers = aceDatabase.aceList;
-
-    //getting heigth and width
+    // Obtenir la hauteur et la largeur de l'écran
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -46,10 +50,14 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
         elevation: 0,
-        leading: const Icon(Icons.church_sharp, color: Colors.white,),
+        leading: const Icon(Icons.church_sharp, color: Colors.white),
         actions: [
           IconButton(
-              onPressed: () => context.read<ACEDatabase>().refreshConfirm(),
+              onPressed: () async {
+                // Rafraîchir les confirmations
+                await DatabaseService.instance.resetUserConfirmations();
+                fetchUsers(); // Recharger les utilisateurs après la réinitialisation
+              },
               icon: const Icon(
                 Icons.refresh_rounded,
                 color: Colors.white,
@@ -84,28 +92,29 @@ class _HomePageState extends State<HomePage> {
             height: screenHeight * 0.03,
           ),
 
-          //Textfield
+          // Champ de texte
           Textfield(controller: searchController, onChanged: performSearch),
 
-          //List of User
+          // Liste des utilisateurs
           Expanded(
               child: ListView.builder(
                   itemCount: currentUsers.length,
                   itemBuilder: (context, index) {
                     final user = currentUsers[index];
-                    final classe = user.classe;
-                    final promotion = user.promotion;
-                    SizedBox(
-                      height: screenHeight * 0.01,
-                    );
+
                     return MyListile(
-                        title: user.name,
-                        subtitle: "$promotion | $classe",
-                        isConfirmed: user.isConfirm,
-                        onPressed: () {
-                          aceDatabase.updateConfirm(index, !user.isConfirm);
-                        });
-                  }))
+                      title: user.name,
+                      subtitle: "${user.promotion} | ${user.classe}",
+                      isConfirmed: user.isConfirm, // Vérifier si la présence est confirmée
+                      onPressed: () async {
+                        // Mettre à jour la confirmation
+                        bool isConfirmed = true;
+                        await DatabaseService.instance.confirmUserPresence(
+                            user.id!, !isConfirmed); // Inverser l'état
+                        fetchUsers(); // Recharger les utilisateurs pour mettre à jour l'affichage
+                      },
+                    );
+                  })),
         ],
       )),
     );

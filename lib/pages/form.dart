@@ -2,9 +2,8 @@ import 'package:ace_app/components/button.dart';
 import 'package:ace_app/database/ace_database.dart';
 import 'package:ace_app/models/user.dart';
 import 'package:ace_app/pages/home.dart';
-import 'package:flutter/material.dart';
 import 'package:ace_app/components/text_field.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
 
 class FormPage extends StatefulWidget {
   const FormPage({super.key});
@@ -19,8 +18,8 @@ class _FormPageState extends State<FormPage> {
   final numController = TextEditingController();
   final promotionController = TextEditingController();
 
-  // login method
-  void login() async {
+  // Méthode d'ajout d'utilisateur
+  void addUser() async {
     if (nameController.text.isNotEmpty &&
         numController.text.isNotEmpty &&
         promotionController.text.isNotEmpty && 
@@ -33,7 +32,8 @@ class _FormPageState extends State<FormPage> {
             classe: classeController.text,
             isConfirm: false);
 
-        await context.read<ACEDatabase>().addNewUser(newUser);
+        // Ajout de l'utilisateur directement via DatabaseService
+        await DatabaseService.instance.insertUser(newUser);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -47,11 +47,13 @@ class _FormPageState extends State<FormPage> {
           ),
         );
 
+        // Réinitialiser les champs
         nameController.clear();
         classeController.clear();
         numController.clear();
         promotionController.clear();
 
+        // Naviguer vers la page d'accueil
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const HomePage()));
       } catch (e) {
@@ -64,8 +66,7 @@ class _FormPageState extends State<FormPage> {
               ),
             ),
             backgroundColor: Colors.red,
-            duration:
-                const Duration(seconds: 2), // Durée d'affichage de la SnackBar
+            duration: const Duration(seconds: 2), // Durée d'affichage de la SnackBar
           ),
         );
       }
@@ -187,8 +188,8 @@ class _FormPageState extends State<FormPage> {
 
             // Bouton d'inscription
             MyButton(
-              text: "S'enregister",
-              onTap: login,
+              text: "S'enregistrer",
+              onTap: addUser, // Changement ici pour utiliser addUser
             )
           ],
         ),
