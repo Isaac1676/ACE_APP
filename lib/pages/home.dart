@@ -1,5 +1,6 @@
 // ignore_for_file: unrelated_type_equality_checks
 
+import 'package:ace_app/components/dialog.dart';
 import 'package:ace_app/database/ace_database.dart';
 import 'package:ace_app/models/user.dart';// Assurez-vous que le chemin est correct
 import 'package:ace_app/components/list_tile.dart';
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController searchController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
   List<User> currentUsers = []; // Liste pour stocker les utilisateurs
 
   @override
@@ -53,16 +55,32 @@ class _HomePageState extends State<HomePage> {
         leading: const Icon(Icons.church_sharp, color: Colors.white),
         actions: [
           IconButton(
-              onPressed: () async {
-                // Rafraîchir les confirmations
-                await DatabaseService.instance.resetUserConfirmations();
-                fetchUsers(); // Recharger les utilisateurs après la réinitialisation
-              },
-              icon: const Icon(
-                Icons.refresh_rounded,
-                color: Colors.white,
-              ))
+            onPressed: () async {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return ValidationDialogBox(
+                    controller: codeController,
+                    correctCode: '12345',
+                    onValidCode: () async {
+                      await DatabaseService.instance.resetUserConfirmations();
+                      fetchUsers();
+                      Navigator.of(context).pop();
+                    },
+                    onCancel: () {
+                      Navigator.of(context).pop();
+                    },
+                  );
+                },
+              );
+            },
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: Colors.white,
+            ),
+          ),
         ],
+
         title: Text(
           "A C C U E I L",
           style: TextStyle(

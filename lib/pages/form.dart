@@ -189,7 +189,8 @@ class _FormPageState extends State<FormPage> {
             // Bouton d'inscription
             MyButton(
               text: "S'enregistrer",
-              onTap: addUser, // Changement ici pour utiliser addUser
+              onTap: addUser,
+              isBlue: true,
             )
           ],
         ),
